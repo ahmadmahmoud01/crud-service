@@ -30,24 +30,14 @@ class ProductController extends Controller
     public function index()
     {
         $products = $this->productService->getAll();
-        // return response()->json('All Products Returned Succeefully', $products);
         return $this->api_response(true, 'Data retrieved successfully', $products);
-
     }
 
 
-    public function store(Request $request)
+    public function store(ProductRequest $request)
     {
-        $data = $request->validate([
-            'name' => 'required|string|max:255',
-            'price' => 'required|numeric',
-            'description' => 'nullable|string',
-        ]);
-
-        $product = $this->productService->create($data);
-        // return response()->json($product, 201);
+        $product = $this->productService->create($request->validated());
         return $this->api_response(true, 'Product created successfully', $product, 201);
-
     }
 
     public function show(Product $product)
@@ -56,26 +46,16 @@ class ProductController extends Controller
         if (!$product) {
             return $this->api_response(false, 'Product not found');
         }
-        // return response()->json($product);
         return $this->api_response(true, 'Product retrieved successfully', $product);
-
-
-
     }
 
 
-    public function update(Request $request, Product $product)
+    public function update(ProductRequest $request, Product $product)
     {
         if (!$product) {
             return $this->api_response(false, 'Product not found', null, 404);
         }
-        $data = $request->validate([
-            'name' => 'required|string|max:255',
-            'price' => 'required|numeric',
-            'description' => 'nullable|string',
-        ]);
-        // return response()->json($product);
-        $product = $this->productService->update($product, $data);
+        $product = $this->productService->update($product, $request->validated());
         return $this->api_response(true, 'Product updated successfully', $product);
     }
 
@@ -87,6 +67,5 @@ class ProductController extends Controller
 
         $this->productService->delete($product);
         return $this->api_response(true, 'Product deleted successfully', $product);
-
     }
 }
